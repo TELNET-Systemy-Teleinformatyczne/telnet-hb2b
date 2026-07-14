@@ -17,6 +17,7 @@
 package org.holodeckb2b.core.pmode;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
 
 import org.holodeckb2b.common.pmode.Leg;
 import org.holodeckb2b.common.pmode.PMode;
@@ -24,6 +25,7 @@ import org.holodeckb2b.common.pmode.PartnerConfig;
 import org.holodeckb2b.common.pmode.Protocol;
 import org.holodeckb2b.common.pmode.PullRequestFlow;
 import org.holodeckb2b.interfaces.general.EbMSConstants;
+import org.holodeckb2b.interfaces.pmode.ILeg;
 import org.holodeckb2b.interfaces.pmode.IPullRequestFlow;
 import org.junit.Test;
 
@@ -158,5 +160,24 @@ public class PModeUtilsTest {
                 PModeUtils.getOutPullRequestFlow(validPMode);
 
         assertNotNull(requestFlow);
+    }
+
+    @Test
+    public void testTwoWaySyncSendAndReceiveLegs() {
+        PMode validPMode = new PMode();
+        validPMode.setMep(EbMSConstants.TWO_WAY_MEP);
+        validPMode.setMepBinding(EbMSConstants.TWO_WAY_SYNC);
+
+        Leg requestLeg = new Leg();
+        Protocol protocolConfig = new Protocol();
+        protocolConfig.setAddress("address");
+        requestLeg.setProtocol(protocolConfig);
+        validPMode.addLeg(requestLeg);
+
+        Leg replyLeg = new Leg();
+        validPMode.addLeg(replyLeg);
+
+        assertEquals(ILeg.Label.REQUEST, PModeUtils.getSendLeg(validPMode).getLabel());
+        assertEquals(ILeg.Label.REPLY, PModeUtils.getReceiveLeg(validPMode).getLabel());
     }
 }

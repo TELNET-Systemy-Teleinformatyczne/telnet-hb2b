@@ -162,10 +162,7 @@ public class PModeValidator implements IPModeValidator {
 				errors.add(new PModeValidationError(tpRoleName + ".Signature.KeyAlias",
 						"A reference to the private key must be specified"));
 			String password = sigCfg.getCertificatePassword();
-			if (Utils.isNullOrEmpty(password))
-				errors.add(new PModeValidationError(tpRoleName + ".Signature.KeyPassword",
-						"A password for the private key must be specified"));
-			if (!Utils.isNullOrEmpty(alias) && !Utils.isNullOrEmpty(password)) {
+			if (!Utils.isNullOrEmpty(alias)) {
 				PrivateKeyEntry keyPair = getKeyPair(alias, password);
 				if (keyPair == null)
 					errors.add(new PModeValidationError(tpRoleName + ".Signature",
@@ -228,10 +225,7 @@ public class PModeValidator implements IPModeValidator {
 				}
 			} else {
 				String pwd = config.getCertificatePassword();
-				if (Utils.isNullOrEmpty(pwd))
-					errors.add(new PModeValidationError(tpRoleName + ".Encryption.KeyPassword",
-								"A password for the private key must be specified"));
-				else if (!Utils.isNullOrEmpty(alias) && getKeyPair(alias, pwd) == null)
+				if (!Utils.isNullOrEmpty(alias) && getKeyPair(alias, pwd) == null)
 					errors.add(new PModeValidationError(tpRoleName + ".Encryption",
 								"The specified key pair for decryption is not available"));
 			}

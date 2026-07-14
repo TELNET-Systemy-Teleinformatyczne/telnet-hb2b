@@ -19,6 +19,12 @@ package org.holodeckb2b.ebms3.pmode;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.stream.Stream;
+
 import org.holodeckb2b.common.pmode.BusinessInfo;
 import org.holodeckb2b.common.pmode.Leg;
 import org.holodeckb2b.common.pmode.PMode;
@@ -48,6 +54,31 @@ public class BasicPModeValidatorTest {
         validPMode.addLeg(new Leg());
 
         assertTrue(Utils.isNullOrEmpty(validator.validatePMode(validPMode)));
+    }
+
+    @Test
+    public void testValidTwoWaySyncPMode() {
+        PMode validPMode = new PMode();
+        validPMode.setMep(EbMSConstants.TWO_WAY_MEP);
+        validPMode.setMepBinding(EbMSConstants.TWO_WAY_SYNC);
+        validPMode.addLeg(new Leg());
+        validPMode.addLeg(new Leg());
+
+        assertTrue(Utils.isNullOrEmpty(validator.validatePMode(validPMode)));
+    }
+
+    @Test
+    public void testDistributionPModesAreValid() throws Exception {
+        Path pmodesDir = Paths.get("..", "holodeckb2b-distribution", "basedir", "repository", "pmodes");
+
+        try (Stream<Path> pmodeFiles = Files.list(pmodesDir)) {
+            for (Path pmodeFile : (Iterable<Path>) pmodeFiles.filter(p -> p.toString().endsWith(".xml"))::iterator) {
+                try (InputStream is = Files.newInputStream(pmodeFile)) {
+                    assertTrue("Invalid P-Mode: " + pmodeFile,
+                               Utils.isNullOrEmpty(validator.validatePMode(PMode.createFromXML(is))));
+                }
+            }
+        }
     }
 
     /**

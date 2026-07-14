@@ -163,7 +163,7 @@ public class PModeValidatorTest {
 		SigningConfig sigConfig = new SigningConfig();
 		secConfig.setSignatureConfiguration(sigConfig);
 
-		assertEquals(2, new PModeValidator().validatePMode(pmode).size());
+		assertEquals(1, new PModeValidator().validatePMode(pmode).size());
 	}
 
 	@Test
@@ -352,7 +352,7 @@ public class PModeValidatorTest {
 
 		PModeValidator validator = new PModeValidator();
 
-		assertEquals(2, validator.validatePMode(pmode).size());
+		assertEquals(1, validator.validatePMode(pmode).size());
 	}
 
 	@Test

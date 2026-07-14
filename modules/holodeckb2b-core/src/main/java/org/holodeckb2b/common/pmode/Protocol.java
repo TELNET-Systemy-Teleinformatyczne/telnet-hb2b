@@ -45,6 +45,16 @@ public class Protocol implements IProtocol, Serializable {
     @Element (name = "UseHTTPCompression", required = false)
     private Boolean useHTTPCompression;
 
+    @Element (name = "TLSConfiguration", required = false)
+    private TLSConfiguration tlsConfiguration;
+
+    static class TLSConfiguration implements Serializable {
+        private static final long serialVersionUID = -8313258642734856734L;
+
+        @Element (name = "ClientCertificate", required = false)
+        private String clientCertificate;
+    }
+
     /**
      * Default constructor creates a new and empty <code>Protocol</code> instance.
      */
@@ -61,6 +71,7 @@ public class Protocol implements IProtocol, Serializable {
         this.useChunking = source.useChunking();
         this.useHTTPCompression = source.useHTTPCompression();
         this.addActorAttribute = source.shouldAddActorOrRoleAttribute();
+        setClientCertificateAlias(source.getClientCertificateAlias());
     }
 
     @Override
@@ -106,5 +117,20 @@ public class Protocol implements IProtocol, Serializable {
 
     public void setAddActorOrRoleAttribute(final boolean shouldAddActorAttribute) {
         addActorAttribute = shouldAddActorAttribute;
+    }
+
+    @Override
+    public String getClientCertificateAlias() {
+        return tlsConfiguration != null ? tlsConfiguration.clientCertificate : null;
+    }
+
+    public void setClientCertificateAlias(final String alias) {
+        if (alias == null)
+            tlsConfiguration = null;
+        else {
+            if (tlsConfiguration == null)
+                tlsConfiguration = new TLSConfiguration();
+            tlsConfiguration.clientCertificate = alias;
+        }
     }
 }

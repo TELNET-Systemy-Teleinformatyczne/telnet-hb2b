@@ -18,8 +18,10 @@ package org.holodeckb2b.core.axis2;
 
 import static org.apache.axis2.client.ServiceClient.ANON_OUT_IN_OP;
 
+import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 
+import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 
 import org.apache.axis2.AxisFault;
@@ -43,14 +45,18 @@ import org.holodeckb2b.common.util.MessageUnitUtils;
 import org.holodeckb2b.commons.util.Utils;
 import org.holodeckb2b.core.HolodeckB2BCore;
 import org.holodeckb2b.core.MessageProcessingContext;
+import org.holodeckb2b.core.pmode.PModeUtils;
 import org.holodeckb2b.interfaces.core.HolodeckB2BCoreInterface;
 import org.holodeckb2b.interfaces.core.IMessageProcessingContext;
 import org.holodeckb2b.interfaces.messagemodel.IErrorMessage;
 import org.holodeckb2b.interfaces.messagemodel.IPullRequest;
 import org.holodeckb2b.interfaces.messagemodel.IReceipt;
 import org.holodeckb2b.interfaces.messagemodel.IUserMessage;
+import org.holodeckb2b.interfaces.pmode.ILeg;
 import org.holodeckb2b.interfaces.pmode.IPMode;
+import org.holodeckb2b.interfaces.pmode.IProtocol;
 import org.holodeckb2b.interfaces.processingmodel.ProcessingState;
+import org.holodeckb2b.interfaces.security.SecurityProcessingException;
 import org.holodeckb2b.interfaces.storage.IErrorMessageEntity;
 import org.holodeckb2b.interfaces.storage.IMessageUnitEntity;
 import org.holodeckb2b.interfaces.storage.IPullRequestEntity;
@@ -152,7 +158,7 @@ public class Axis2Sender {
 	         */
 	        log.trace("Prepare SSLContext");
 	        try {
-	            configContext.setProperty(SSLContext.class.getName(), SSLContext.getDefault());
+	            configContext.setProperty(SSLContext.class.getName(), createSSLContext(messageUnit));
 	        } catch (final NoSuchAlgorithmException ex) {
 	            log.error("Error setting up SSLContext : {}", Utils.getExceptionTrace(ex));
 	            throw new AxisFault("Could not initialise SSLContext", ex);
@@ -220,6 +226,48 @@ public class Axis2Sender {
     	HolodeckB2BCoreInterface.getEventProcessor().raiseEvent(
     			new GenericSendMessageFailure(messageUnit, failureDescription, cause));
 	}
+
+    /**
+     * Creates the SSL context for the send operation. If the sending leg configures a TLS client certificate, a
+     * request-specific context containing that key pair is created. Otherwise the JVM default context is used.
+     */
+	private static SSLContext createSSLContext(final IMessageUnitEntity messageUnit)
+            throws NoSuchAlgorithmException, AxisFault {
+        final ILeg leg = PModeUtils.getLeg(messageUnit);
+        final IProtocol protocol = leg != null ? leg.getProtocol() : null;
+        final String clientCertificateAlias = protocol != null ? protocol.getClientCertificateAlias() : null;
+
+        if (Utils.isNullOrEmpty(clientCertificateAlias))
+            return SSLContext.getDefault();
+
+        try {
+            final KeyStore.PrivateKeyEntry clientKeyPair =
+                    HolodeckB2BCore.getCertificateManager().getKeyPair(clientCertificateAlias, null);
+            if (clientKeyPair == null)
+                throw new AxisFault("TLS client certificate not found: " + clientCertificateAlias);
+
+            final KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            keyStore.load(null, null);
+            keyStore.setKeyEntry(clientCertificateAlias, clientKeyPair.getPrivateKey(), new char[0],
+                                 clientKeyPair.getCertificateChain());
+
+            final KeyManagerFactory keyManagerFactory =
+                    KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+            keyManagerFactory.init(keyStore, new char[0]);
+
+            final SSLContext sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(keyManagerFactory.getKeyManagers(), null, null);
+            return sslContext;
+        } catch (final SecurityProcessingException ex) {
+            log.error("Could not load TLS client certificate {} : {}", clientCertificateAlias,
+                      Utils.getExceptionTrace(ex));
+            throw new AxisFault("Could not load TLS client certificate", ex);
+        } catch (final Exception ex) {
+            log.error("Could not initialise SSLContext for TLS client certificate {} : {}", clientCertificateAlias,
+                      Utils.getExceptionTrace(ex));
+            throw new AxisFault("Could not initialise SSLContext", ex);
+        }
+    }
 
 
 }

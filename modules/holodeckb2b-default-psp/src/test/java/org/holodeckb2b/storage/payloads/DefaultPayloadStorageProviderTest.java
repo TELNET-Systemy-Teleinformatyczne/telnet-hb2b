@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -115,7 +116,11 @@ class DefaultPayloadStorageProviderTest {
 
 		IPayloadContent content = assertDoesNotThrow(() -> provider.getPayloadContent(pl));
 
-		assertNotNull(assertDoesNotThrow(() -> content.getContent()));
+		assertDoesNotThrow(() -> {
+			try (InputStream is = content.getContent()) {
+				assertNotNull(is);
+			}
+		});
 	}
 
 	@Test

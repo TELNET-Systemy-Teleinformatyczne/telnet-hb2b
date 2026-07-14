@@ -291,9 +291,19 @@ public class DefaultCertManager implements ICertificateManager {
                                                                                    throws SecurityProcessingException {
         try {
         	KeyStore ks = KeystoreUtils.load(privateKeystorePath, privateKeystorePwd);
+        	if (!ks.containsAlias(alias))
+        		return null;
+
         	final char[] pwd = !Utils.isNullOrEmpty(password) ? password.toCharArray() : new char[] {};
-        	return !ks.containsAlias(alias) ? null : (KeyStore.PrivateKeyEntry) ks.getEntry(alias,
-                                                              					new KeyStore.PasswordProtection(pwd));
+        	try {
+        		return (KeyStore.PrivateKeyEntry) ks.getEntry(alias, new KeyStore.PasswordProtection(pwd));
+        	} catch (UnrecoverableEntryException missingEntryPwd) {
+        		if (!Utils.isNullOrEmpty(password) || Utils.isNullOrEmpty(privateKeystorePwd))
+        			throw missingEntryPwd;
+
+        		return (KeyStore.PrivateKeyEntry) ks.getEntry(alias,
+        												new KeyStore.PasswordProtection(privateKeystorePwd.toCharArray()));
+        	}
         } catch (NoSuchAlgorithmException | UnrecoverableEntryException | KeyStoreException ex) {
             log.error("Problem retrieving key pair with alias {} from keystore!"
                     + "\n\tError details: {}-{}", alias, ex.getClass().getSimpleName(), ex.getMessage());

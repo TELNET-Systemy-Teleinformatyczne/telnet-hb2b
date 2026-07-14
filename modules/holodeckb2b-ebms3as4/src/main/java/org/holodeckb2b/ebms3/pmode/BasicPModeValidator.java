@@ -55,6 +55,7 @@ public class BasicPModeValidator implements IPModeValidator {
         VALID_MEP_BINDINGS.add(EbMSConstants.TWO_WAY_PULL_PUSH);
         VALID_MEP_BINDINGS.add(EbMSConstants.TWO_WAY_PULL_PULL);
         VALID_MEP_BINDINGS.add(EbMSConstants.TWO_WAY_PUSH_PULL);
+        VALID_MEP_BINDINGS.add(EbMSConstants.TWO_WAY_SYNC);
     }
 
     @Override

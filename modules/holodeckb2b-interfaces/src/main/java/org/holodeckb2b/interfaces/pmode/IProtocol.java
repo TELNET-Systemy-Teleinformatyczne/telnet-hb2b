@@ -76,4 +76,11 @@ public interface IProtocol {
      */
     public boolean useHTTPCompression();
 
+    /**
+     * Gets the alias of the client certificate that should be used for TLS client authentication.
+     *
+     * @return  The alias of the client certificate, or <code>null</code> if no specific certificate is configured
+     */
+    default String getClientCertificateAlias() { return null; }
+
 }

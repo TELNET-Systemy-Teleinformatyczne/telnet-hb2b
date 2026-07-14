@@ -71,6 +71,12 @@
             <artifactId>jakarta.activation</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.holodeckb2b.extensions</groupId>
+            <artifactId>file-backend</artifactId>
+            <version>2.0.0</version>
+            <scope>test</scope>
+        </dependency>
 		<!-- Test util classes from the Core -->
         <dependency>
             <groupId>${project.groupId}</groupId>

@@ -19,6 +19,7 @@ package org.holodeckb2b.storage.payloads;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -116,7 +117,11 @@ class PayloadContentTest {
 			fail(e);
 		}
 
-		assertDoesNotThrow(() -> content.getContent());
+		assertDoesNotThrow(() -> {
+			try (InputStream is = content.getContent()) {
+				assertNotNull(is);
+			}
+		});
 	}
 
 	@Test
