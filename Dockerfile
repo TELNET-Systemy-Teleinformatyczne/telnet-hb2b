@@ -24,7 +24,7 @@ RUN mkdir -p /tmp/empty \
     && mvn -B -ntp install:install-file \
         -DgroupId=org.holodeckb2b.extensions \
         -DartifactId=file-backend \
-        -Dversion=2.0.0 \
+        -Dversion=2.0.0-telnet \
         -Dpackaging=jar \
         -Dfile=/tmp/file-backend-placeholder.jar
 
