@@ -10,8 +10,7 @@ WORKDIR /workspace
 COPY . telnet-hb2b/
 COPY --from=generic-utils . telnet-hb2b-generic-utils/
 COPY --from=file-backend . telnet-hb2b-file-backend/
-
-RUN if [ -d telnet-hb2b/.git ]; then git -C telnet-hb2b checkout "$HB2B_BRANCH"; fi
+COPY --from=signaldelivery . telnet-hb2b-signaldelivery/
 
 # Build shared dependencies first.
 RUN mvn -B -ntp -f telnet-hb2b-generic-utils/pom.xml ${MAVEN_ARGS} install
@@ -34,6 +33,8 @@ RUN mkdir -p /tmp/empty \
 RUN mvn -B -ntp -f telnet-hb2b/pom.xml ${MAVEN_ARGS} -pl '!modules/holodeckb2b-distribution' install
 
 RUN mvn -B -ntp -f telnet-hb2b-file-backend/pom.xml ${MAVEN_ARGS} install
+
+RUN mvn -B -ntp -f telnet-hb2b-signaldelivery/pom.xml ${MAVEN_ARGS} install
 
 # Build the final Holodeck B2B distribution after all local dependencies are
 # available.

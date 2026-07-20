@@ -78,6 +78,12 @@
 			<artifactId>file-backend</artifactId>
 			<version>2.0.0-telnet</version>
         </dependency>
+        <!-- Add the signal delivery extension -->
+        <dependency>
+            <groupId>org.holodeckb2b</groupId>
+            <artifactId>signaldelivery</artifactId>
+            <version>2.0.0-telnet</version>
+        </dependency>
         
         <!--===============================================================
             Second the runtime only dependencies, not declared in the
