@@ -33,6 +33,9 @@ import org.holodeckb2b.interfaces.storage.providers.StorageException;
  */
 public class EntityManagerUtil {
     private static EntityManagerFactory instance;
+    private static final String TEST_DB_URL_ENV = "HB2B_TEST_DB_URL";
+    private static final String TEST_DB_USER_ENV = "HB2B_TEST_DB_USER";
+    private static final String TEST_DB_PASSWORD_ENV = "HB2B_TEST_DB_PASSWORD";
 
     /**
      * Creates a new <code>EntityManagerFactory</code> for the test database.
@@ -40,8 +43,19 @@ public class EntityManagerUtil {
      * @return	the new <code>EntityManagerFactory</code>
      */
     public static EntityManagerFactory createEntityManagerFactory() {
-    	instance =  Persistence.createEntityManagerFactory("holodeckb2b-test");
+        java.util.Properties props = new java.util.Properties();
+        props.put("hibernate.connection.url", requireEnv(TEST_DB_URL_ENV));
+        props.put("hibernate.connection.username", requireEnv(TEST_DB_USER_ENV));
+        props.put("hibernate.connection.password", requireEnv(TEST_DB_PASSWORD_ENV));
+    	instance =  Persistence.createEntityManagerFactory("holodeckb2b-test", props);
 		return instance;
+    }
+
+    private static String requireEnv(final String name) {
+        final String value = System.getenv(name);
+        if (value == null || value.trim().isEmpty())
+            throw new IllegalStateException("Missing required SQL Server test database environment variable: " + name);
+        return value;
     }
 
     /**

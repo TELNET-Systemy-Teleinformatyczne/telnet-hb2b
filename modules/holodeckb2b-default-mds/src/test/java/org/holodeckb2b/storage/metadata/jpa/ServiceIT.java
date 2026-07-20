@@ -33,7 +33,7 @@ import org.junit.Test;
  * @author Sander Fieten (sander at holodeck-b2b.org)
  * @since  3.0.0
  */
-public class ServiceTest {
+public class ServiceIT {
 
     private static final String T_BASIC_SERVICE_NAME = "http://holodeck-b2b.org/development/testing/Service/1-0010";
     private static final String T_SPECIAL_SERVICE_NAME = "http://holodeck-b2b.org/development/testing/Śêřvįċę/2";

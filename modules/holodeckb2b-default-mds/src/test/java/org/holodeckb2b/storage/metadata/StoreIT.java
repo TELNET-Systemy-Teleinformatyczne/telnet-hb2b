@@ -57,11 +57,11 @@ import org.holodeckb2b.interfaces.storage.IPayloadEntity;
 import org.holodeckb2b.interfaces.storage.providers.StorageException;
 import org.holodeckb2b.interfaces.submit.DuplicateMessageIdException;
 import org.holodeckb2b.storage.metadata.jpa.PayloadInfo;
-import org.holodeckb2b.storage.metadata.jpa.ReceiptTest;
+import org.holodeckb2b.storage.metadata.jpa.ReceiptIT;
 import org.holodeckb2b.storage.metadata.testhelpers.EntityManagerUtil;
 import org.junit.jupiter.api.Test;
 
-public class StoreTests extends BaseProviderTest {
+public class StoreIT extends BaseProviderTest {
 
 	@Test
 	void testGenericInfo() {
@@ -311,11 +311,11 @@ public class StoreTests extends BaseProviderTest {
 	@Test
 	void testReceipt() {
 		Receipt r = new Receipt();
-		r.setContent(ReceiptTest.generateRcptContent());
+		r.setContent(ReceiptIT.generateRcptContent());
 
 		ReceiptEntity stored = assertDoesNotThrow(() -> provider.storeMessageUnit(r));
 
-		ReceiptTest.assertSameXML(r.getContent(), stored.getContent());
+		ReceiptIT.assertSameXML(r.getContent(), stored.getContent());
 
 		assertExistsInDb(stored);
 	}

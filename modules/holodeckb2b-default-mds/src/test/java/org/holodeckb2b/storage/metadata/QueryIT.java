@@ -45,7 +45,7 @@ import org.holodeckb2b.storage.metadata.testhelpers.TestDataSet;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-public class QueryTests extends BaseProviderTest {
+public class QueryIT extends BaseProviderTest {
 
 	@BeforeAll
 	static void createTestData() {

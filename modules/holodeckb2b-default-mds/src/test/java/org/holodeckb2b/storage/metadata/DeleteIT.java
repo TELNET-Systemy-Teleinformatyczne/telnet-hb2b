@@ -30,7 +30,7 @@ import org.holodeckb2b.storage.metadata.jpa.PayloadInfo;
 import org.holodeckb2b.storage.metadata.testhelpers.EntityManagerUtil;
 import org.junit.jupiter.api.Test;
 
-public class DeleteTests extends BaseProviderTest {
+public class DeleteIT extends BaseProviderTest {
 
 	@Test
 	void testRemoveUserMessage() {

@@ -33,7 +33,7 @@ import org.junit.Test;
  * @author Sander Fieten (sander at holodeck-b2b.org)
  * @since  3.0.0
  */
-public class AgreementReferenceTest {
+public class AgreementReferenceIT {
 
     private static final String T_BASIC_AGREEMENT_NAME = "AgreementName-1-0010";
     private static final String T_SPECIAL_AGREEMENT_NAME = "A0010:z98s/gsta/t65w/ØĦ";

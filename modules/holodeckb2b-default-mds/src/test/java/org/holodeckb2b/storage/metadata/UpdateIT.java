@@ -48,7 +48,7 @@ import org.holodeckb2b.storage.metadata.testhelpers.TestMDSProvider;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-public class UpdateTests {
+public class UpdateIT {
 	private static TestMDSProvider 	provider;
 
 	@BeforeAll

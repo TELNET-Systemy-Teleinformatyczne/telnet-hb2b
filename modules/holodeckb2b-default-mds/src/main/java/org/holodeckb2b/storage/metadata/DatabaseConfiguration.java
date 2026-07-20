@@ -17,8 +17,6 @@
 package org.holodeckb2b.storage.metadata;
 
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -31,14 +29,14 @@ import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.PersistenceUnitTransactionType;
 import javax.sql.DataSource;
 
-import org.hibernate.dialect.DerbyTenSevenDialect;
+import org.hibernate.dialect.SQLServer2016Dialect;
 import org.hibernate.jpa.HibernatePersistenceProvider;
-import org.holodeckb2b.commons.util.Utils;
+import org.holodeckb2b.interfaces.storage.providers.StorageException;
 
 /**
- * Contains the database configuration used by the default Meta-data Storage Provider of Holodeck B2B. It creates an
- * embedded Derby database in the <code>db</code> subdirectory of the Holodeck B2B home directory. The directory were
- * the database is stored can be changed by setting the environment variable <code>HB2B_DB_DIR</code>.
+ * Contains the database configuration used by the default Meta-data Storage Provider of Holodeck B2B. It connects to
+ * a SQL Server database configured through the <code>HB2B_DB_URL</code>, <code>HB2B_DB_USER</code> and
+ * <code>HB2B_DB_PASSWORD</code> environment variables.
  *
  * @author Sander Fieten (sander at holodeck-b2b.org)
  * @since  7.0.0
@@ -46,6 +44,9 @@ import org.holodeckb2b.commons.util.Utils;
 final class DatabaseConfiguration implements PersistenceUnitInfo {
 
 	public static final DatabaseConfiguration INSTANCE = new DatabaseConfiguration();
+	private static final String DB_URL_ENV = "HB2B_DB_URL";
+	private static final String DB_USER_ENV = "HB2B_DB_USER";
+	private static final String DB_PASSWORD_ENV = "HB2B_DB_PASSWORD";
 
     @Override
     public String getPersistenceUnitName() {
@@ -85,14 +86,24 @@ final class DatabaseConfiguration implements PersistenceUnitInfo {
 
     @Override
     public Properties getProperties() {
+        try {
+            return createProperties();
+        } catch (StorageException missingConfiguration) {
+            throw new IllegalStateException(missingConfiguration.getMessage(), missingConfiguration);
+        }
+    }
+
+    Properties getConfiguredProperties() throws StorageException {
+        return createProperties();
+    }
+
+    private Properties createProperties() throws StorageException {
         Properties props = new Properties();
-        props.put(org.hibernate.cfg.AvailableSettings.DRIVER, org.apache.derby.jdbc.EmbeddedDriver.class.getName());
-        String dbPath = System.getenv("HB2B_DB_DIR");
-        if (Utils.isNullOrEmpty(dbPath) || !Files.isDirectory(Paths.get(dbPath)) || !Files.isWritable(Paths.get(dbPath)))
-        	dbPath = "db";
-        props.put(org.hibernate.cfg.AvailableSettings.URL,
-                                                    "jdbc:derby:" + dbPath + "/coreDB;databaseName=coreDB;create=true");
-        props.put(org.hibernate.cfg.AvailableSettings.DIALECT, DerbyTenSevenDialect.class);
+        props.put(org.hibernate.cfg.AvailableSettings.DRIVER, com.microsoft.sqlserver.jdbc.SQLServerDriver.class.getName());
+        props.put(org.hibernate.cfg.AvailableSettings.URL, requireEnv(DB_URL_ENV));
+        props.put(org.hibernate.cfg.AvailableSettings.USER, requireEnv(DB_USER_ENV));
+        props.put(org.hibernate.cfg.AvailableSettings.PASS, requireEnv(DB_PASSWORD_ENV));
+        props.put(org.hibernate.cfg.AvailableSettings.DIALECT, SQLServer2016Dialect.class);
         props.put(org.hibernate.cfg.AvailableSettings.HBM2DDL_AUTO, "update");
         props.put(org.hibernate.cfg.AvailableSettings.SHOW_SQL, false);
         props.put(org.hibernate.cfg.AvailableSettings.QUERY_STARTUP_CHECKING, false);
@@ -104,6 +115,13 @@ final class DatabaseConfiguration implements PersistenceUnitInfo {
         props.put(org.hibernate.cfg.AvailableSettings.STATEMENT_BATCH_SIZE, 20);
 
         return props;
+    }
+
+    private String requireEnv(final String name) throws StorageException {
+        final String value = System.getenv(name);
+        if (value == null || value.trim().isEmpty())
+            throw new StorageException("Missing required SQL Server metadata database environment variable: " + name);
+        return value;
     }
 
     @Override

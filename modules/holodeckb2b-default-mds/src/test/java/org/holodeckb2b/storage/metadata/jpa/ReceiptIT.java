@@ -34,7 +34,7 @@ import org.holodeckb2b.storage.metadata.testhelpers.EntityManagerUtil;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Element;
 
-public class ReceiptTest {
+public class ReceiptIT {
 	private static final DocumentBuilderFactory XML_DBF;
 	static {
 		XML_DBF = DocumentBuilderFactory.newInstance();

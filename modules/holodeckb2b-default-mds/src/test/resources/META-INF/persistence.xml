@@ -17,8 +17,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <!--
-This is the Hibernate JPA configuration file for the default Holodeck B2B persistency provider. It uses an embedded
-Derby database for storing the message unit meta-data.
+This is the Hibernate JPA configuration file for the default Holodeck B2B persistency provider. It uses a SQL Server
+database for storing the message unit meta-data.
 
 Since: 3.0.0
 -->
@@ -30,13 +30,12 @@ Since: 3.0.0
       <property name="hibernate.archive.autodetection" value="class"/>
       <property name="hibernate.show_sql" value="false"/>
       <property name="hibernate.format_sql" value="true"/>
-      <property name="hibernate.connection.driver_class" value="org.apache.derby.jdbc.EmbeddedDriver"/>
-      <property name="hibernate.connection.url" value="jdbc:derby:memory:hb2bDB;create=true"/>      
-      <property name="hibernate.connection.username" value="hb2b"/>
-      <property name="hibernate.connection.password" value="hb2b"/>
-      <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
-      <property name="hibernate.dialect" value="org.hibernate.dialect.DerbyDialect"/>
-      <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
+      <property name="hibernate.connection.driver_class" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"/>
+      <property name="hibernate.connection.url" value="${env.HB2B_TEST_DB_URL}"/>
+      <property name="hibernate.connection.username" value="${env.HB2B_TEST_DB_USER}"/>
+      <property name="hibernate.connection.password" value="${env.HB2B_TEST_DB_PASSWORD}"/>
+      <property name="hibernate.hbm2ddl.auto" value="update"/>
+      <property name="hibernate.dialect" value="org.hibernate.dialect.SQLServer2016Dialect"/>
     </properties>
   </persistence-unit>
 </persistence>

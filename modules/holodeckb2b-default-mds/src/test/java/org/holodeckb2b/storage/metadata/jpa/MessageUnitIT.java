@@ -32,7 +32,7 @@ import org.holodeckb2b.interfaces.processingmodel.ProcessingState;
 import org.holodeckb2b.storage.metadata.testhelpers.EntityManagerUtil;
 import org.junit.jupiter.api.Test;
 
-public class MessageUnitTest {
+public class MessageUnitIT {
 
 	@Test
 	void testSetProcState() {

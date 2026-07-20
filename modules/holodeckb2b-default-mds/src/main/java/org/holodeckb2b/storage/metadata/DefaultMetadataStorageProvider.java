@@ -18,7 +18,6 @@ package org.holodeckb2b.storage.metadata;
 
 import java.lang.reflect.Constructor;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -56,9 +55,7 @@ import org.holodeckb2b.storage.metadata.jpa.UserMessage;
 
 /**
  * Is the default implementation of the Holodeck B2B <i>Metadata Storage Provider</i>. This provider uses the Java
- * Persistence API with an integrated Derby database for storing all the message meta-data. It is suitable for smaller
- * gateway deployments. For larger gateways that have additional requirements on performance and high availability a
- * different provider should be used.
+ * Persistence API with a SQL Server database for storing all the message meta-data.
  *
  * @author Sander Fieten (sander at holodeck-b2b.org)
  * @since 7.0.0
@@ -79,7 +76,9 @@ public class DefaultMetadataStorageProvider implements IMetadataStorageProvider 
 	@Override
 	public void init(final IConfiguration config) throws StorageException {
 		emf = new HibernatePersistenceProvider().createContainerEntityManagerFactory(DatabaseConfiguration.INSTANCE,
-				Collections.emptyMap());
+				DatabaseConfiguration.INSTANCE.getConfiguredProperties());
+		if (emf == null)
+			throw new StorageException("Could not initialise SQL Server metadata database connection");
 		instance = this;
 	}
 

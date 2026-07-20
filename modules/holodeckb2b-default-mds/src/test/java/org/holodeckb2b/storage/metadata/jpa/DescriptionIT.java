@@ -35,7 +35,7 @@ import org.junit.Test;
  * @author Sander Fieten (sander at holodeck-b2b.org)
  * @since  7.0.0
  */
-public class DescriptionTest {
+public class DescriptionIT {
 
     private static final String T_BASIC_DESCR_TEXT = "This is a very simple and quite useless description";
     private static final String T_SPECIAL_DESCR_TEXT = "Thįs dęsḉr1ptiØn has some special characters!";
