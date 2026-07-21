@@ -20,12 +20,15 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 
 import org.holodeckb2b.commons.util.Utils;
@@ -141,6 +144,9 @@ public class TradingPartner implements ITradingPartner, Serializable {
      */
     @ElementCollection(targetClass = org.holodeckb2b.storage.metadata.jpa.PartyId.class,
                        fetch = FetchType.EAGER)
+    @CollectionTable(name="TradingPartner_partyIds",
+                     joinColumns = @JoinColumn(name="TradingPartner_OID"),
+                     foreignKey = @ForeignKey(name="FK_TRADING_PARTNER_PARTY_IDS_TRADING_PARTNER"))
     private Collection<IPartyId>     partyIds;
 
 }

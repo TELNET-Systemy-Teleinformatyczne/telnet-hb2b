@@ -19,7 +19,9 @@ package org.holodeckb2b.storage.metadata.jpa;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.Lob;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
 import org.holodeckb2b.interfaces.messagemodel.IPullRequest;
@@ -34,6 +36,7 @@ import org.holodeckb2b.interfaces.messagemodel.IPullRequest;
 @Entity
 @Table(name="PULLREQUEST")
 @DiscriminatorValue("PULLREQ")
+@PrimaryKeyJoinColumn(name="OID", foreignKey = @ForeignKey(name="FK_PULLREQUEST_MSG_UNIT"))
 public class PullRequest extends MessageUnit {
 	private static final long serialVersionUID = 7660030731204386736L;
 

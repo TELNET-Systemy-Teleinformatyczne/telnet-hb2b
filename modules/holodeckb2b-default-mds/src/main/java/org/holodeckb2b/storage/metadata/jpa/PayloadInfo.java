@@ -28,6 +28,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -35,6 +36,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import org.holodeckb2b.common.util.CompareUtils;
 import org.holodeckb2b.commons.util.Utils;
@@ -53,7 +55,8 @@ import org.holodeckb2b.interfaces.messagemodel.IPayload.Containment;
  * @since  3.0.0
  */
 @Entity
-@Table(name="PAYLOAD")
+@Table(name="PAYLOAD",
+       uniqueConstraints = @UniqueConstraint(name="UK_PAYLOAD_PAYLOAD_ID", columnNames = "PAYLOAD_ID"))
 @NamedQueries({
 	@NamedQuery(name="PayloadInfo.findByPayloadId", query="SELECT p FROM PayloadInfo p WHERE p.PAYLOAD_ID = :payloadId")
 })
@@ -206,10 +209,11 @@ public class PayloadInfo implements JPAEntityObject {
     @GeneratedValue
     private long    OID;
 
-    @Column(unique = true)
+    @Column
     private String				PAYLOAD_ID;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="parent_OID", foreignKey = @ForeignKey(name="FK_PAYLOAD_USER_MESSAGE"))
     private UserMessage			parent;
 
     @Enumerated(EnumType.STRING)
@@ -218,7 +222,9 @@ public class PayloadInfo implements JPAEntityObject {
     private String				PMODE_ID;
 
     @ElementCollection(targetClass = Property.class, fetch = FetchType.EAGER)
-    @CollectionTable(name="PL_PROPERTIES", joinColumns = @JoinColumn(name="PAYLOAD_OID"))
+    @CollectionTable(name="PL_PROPERTIES",
+                     joinColumns = @JoinColumn(name="PAYLOAD_OID"),
+                     foreignKey = @ForeignKey(name="FK_PL_PROPERTIES_PAYLOAD"))
     private Collection<IProperty>   properties;
 
     @Embedded

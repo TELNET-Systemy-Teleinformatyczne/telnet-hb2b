@@ -20,7 +20,9 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.Lob;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
 import org.holodeckb2b.interfaces.general.IService;
@@ -39,6 +41,7 @@ import org.holodeckb2b.interfaces.messagemodel.ISelectivePullRequest;
 @Entity
 @Table(name="SELECTPULLREQUEST")
 @DiscriminatorValue("SELECTPULL")
+@PrimaryKeyJoinColumn(name="OID", foreignKey = @ForeignKey(name="FK_SELECTPULLREQUEST_PULLREQUEST"))
 public class SelectivePullRequest extends PullRequest {
 	private static final long serialVersionUID = -7323036617505416772L;
 

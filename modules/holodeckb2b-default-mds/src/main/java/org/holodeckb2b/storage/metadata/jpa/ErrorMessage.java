@@ -26,6 +26,9 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.ForeignKey;
+import javax.persistence.JoinColumn;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
 import org.holodeckb2b.commons.util.Utils;
@@ -45,6 +48,7 @@ import org.holodeckb2b.interfaces.storage.IErrorMessageEntity;
 @Entity
 @Table(name="ERROR_MESSAGE")
 @DiscriminatorValue("ERRORMSG")
+@PrimaryKeyJoinColumn(name="OID", foreignKey = @ForeignKey(name="FK_ERROR_MESSAGE_MSG_UNIT"))
 public class ErrorMessage extends MessageUnit {
     private static final long serialVersionUID = 130225048931288817L;
 
@@ -170,7 +174,9 @@ public class ErrorMessage extends MessageUnit {
      * The list of errors contained in this Error signal
      */
     @ElementCollection(targetClass = EbmsError.class)
-    @CollectionTable(name="ERR_MU_ERRORS")
+    @CollectionTable(name="ERR_MU_ERRORS",
+                     joinColumns = @JoinColumn(name="ErrorMessage_OID"),
+                     foreignKey = @ForeignKey(name="FK_ERR_MU_ERRORS_ERROR_MESSAGE"))
     private List<IEbmsError>       errors;
 
     /**

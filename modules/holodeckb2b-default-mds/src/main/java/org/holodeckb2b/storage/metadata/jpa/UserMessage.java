@@ -30,12 +30,16 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.MapKeyEnumerated;
 import javax.persistence.OneToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import org.holodeckb2b.commons.util.Utils;
 import org.holodeckb2b.interfaces.general.EbMSConstants;
@@ -55,6 +59,7 @@ import org.holodeckb2b.interfaces.storage.IUserMessageEntity;
 @Entity
 @Table(name="USER_MESSAGE")
 @DiscriminatorValue("USERMSG")
+@PrimaryKeyJoinColumn(name="OID", foreignKey = @ForeignKey(name="FK_USER_MESSAGE_MSG_UNIT"))
 public class UserMessage extends MessageUnit {
 	private static final long serialVersionUID = 2076775451055156430L;
 
@@ -155,7 +160,13 @@ public class UserMessage extends MessageUnit {
      * a map with an enumeration to identify whether the partner is the sender or receiver.
      */
     @OneToMany(cascade = CascadeType.ALL)
-    @JoinTable(name="UM_PARTNERS")
+    @JoinTable(name="UM_PARTNERS",
+               joinColumns = @JoinColumn(name="UserMessage_OID",
+                                         foreignKey = @ForeignKey(name="FK_UM_PARTNERS_USER_MESSAGE")),
+               inverseJoinColumns = @JoinColumn(name="partners_OID",
+                                                foreignKey = @ForeignKey(name="FK_UM_PARTNERS_TRADING_PARTNER")),
+               uniqueConstraints = @UniqueConstraint(name="UK_UM_PARTNERS_PARTNERS_OID",
+                                                     columnNames = "partners_OID"))
     @MapKeyColumn(name="PARTNERTYPE")
     @MapKeyEnumerated(EnumType.STRING)
     private Map<PartnerType, TradingPartner>      partners;
@@ -176,6 +187,8 @@ public class UserMessage extends MessageUnit {
      * are all specific to one user meesage.
      */
     @ElementCollection(targetClass = Property.class)
-    @CollectionTable(name="UM_PROPERTIES")
+    @CollectionTable(name="UM_PROPERTIES",
+                     joinColumns = @JoinColumn(name="UserMessage_OID"),
+                     foreignKey = @ForeignKey(name="FK_UM_PROPERTIES_USER_MESSAGE"))
     private List<IProperty>      properties;
 }

@@ -24,7 +24,9 @@ import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.Lob;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.xml.namespace.QName;
@@ -51,6 +53,7 @@ import org.holodeckb2b.interfaces.storage.IReceiptEntity;
 @Entity
 @Table(name="RECEIPT")
 @DiscriminatorValue("RECEIPT")
+@PrimaryKeyJoinColumn(name="OID", foreignKey = @ForeignKey(name="FK_RECEIPT_MSG_UNIT"))
 public class Receipt extends MessageUnit {
     private static final long serialVersionUID = -1475865816627014255L;
 

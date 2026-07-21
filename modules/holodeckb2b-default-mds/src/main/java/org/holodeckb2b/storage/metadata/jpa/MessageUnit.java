@@ -25,6 +25,7 @@ import javax.persistence.CollectionTable;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
@@ -209,7 +210,9 @@ public abstract class MessageUnit implements JPAEntityObject {
     private Date    	MU_TIMESTAMP;
 
     @ElementCollection(targetClass = MessageUnitProcessingState.class, fetch = FetchType.EAGER)
-    @CollectionTable(name="MSG_STATE", joinColumns = @JoinColumn(name="MSGUNIT_OID"))
+    @CollectionTable(name="MSG_STATE",
+                     joinColumns = @JoinColumn(name="MSGUNIT_OID"),
+                     foreignKey = @ForeignKey(name="FK_MSG_STATE_MSG_UNIT"))
     @OrderBy("PROC_STATE_NUM")
     private List<IMessageUnitProcessingState>       states;
 }
